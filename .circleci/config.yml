@@ -35,6 +35,21 @@ jobs:
   # ==========================================
   # TEST JOB - Run tests with PostgreSQL
   # ==========================================
+  customer-controller-test:
+    docker:
+      - image: cimg/openjdk:21.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - maven-deps-{{ checksum "pom.xml" }}
+            - maven-deps-
+      - run:
+          name: Run CustomerController tests
+          command: |
+            echo "Running CustomerController tests..."
+            mvn test -Dtest=CustomerControllerTest
+
   test:
     docker:
       - image: cimg/openjdk:21.0
@@ -127,6 +142,9 @@ workflows:
   build_test_publish:
     jobs:
       - build
+      - customer-controller-test:
+          requires:
+            - build
       - test:
           requires:
             - build
